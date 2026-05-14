@@ -3,9 +3,9 @@ from typing import Generic, TypeVar, Iterator, Iterable, overload
 T = TypeVar("T")
 
 
-class ZList(Generic[T]):
+class ZVec(Generic[T]):
     """
-    Lightweight deeply immutable list.
+    Lightweight deeply immutable vector.
     """
     __slots__ = ("_data", "_hash")
 
@@ -28,7 +28,7 @@ class ZList(Generic[T]):
         return self._hash
 
     def __eq__(self, other: object) -> bool:
-        if isinstance(other, ZList):
+        if isinstance(other, ZVec):
             return self._hash == other._hash and self._data == other._data
         return NotImplemented
 
@@ -44,16 +44,16 @@ class ZList(Generic[T]):
     def __reversed__(self) -> Iterator[T]:
         return reversed(self._data)
 
-    def __add__(self, other: "ZList[T]") -> "ZList[T]":
-        return ZList(self._data + other._data)
+    def __add__(self, other: "ZVec[T]") -> "ZVec[T]":
+        return ZVec(self._data + other._data)
 
     @overload
     def __getitem__(self, index: int) -> T: ...
     @overload
-    def __getitem__(self, index: slice) -> "ZList[T]": ...
-    def __getitem__(self, index: int | slice) -> "T | ZList[T]":
+    def __getitem__(self, index: slice) -> "ZVec[T]": ...
+    def __getitem__(self, index: int | slice) -> "T | ZVec[T]":
         if isinstance(index, slice):
-            return ZList(self._data[index])
+            return ZVec(self._data[index])
         return self._data[index]
 
     def __repr__(self) -> str:
