@@ -6,6 +6,9 @@ V = TypeVar("V")
 
 
 class ZMap(Generic[K, V]):
+    """
+    Lightweight deeply immutable map.
+    """
     __slots__ = ("_data", "_hash")
 
     def __init__(self, mapping: Mapping[K, V]) -> None:

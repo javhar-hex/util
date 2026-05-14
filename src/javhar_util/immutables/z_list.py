@@ -4,6 +4,9 @@ T = TypeVar("T")
 
 
 class ZList(Generic[T]):
+    """
+    Lightweight deeply immutable list.
+    """
     __slots__ = ("_data", "_hash")
 
     def __init__(self, iterable: Iterable[T]) -> None:

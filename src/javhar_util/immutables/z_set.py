@@ -5,6 +5,9 @@ T = TypeVar("T")
 
 
 class ZSet(Generic[T]):
+    """
+    Lightweight deeply immutable set.
+    """
     __slots__ = ("_data", "_hash")
 
     def __init__(self, iterable: Iterable[T]) -> None:
