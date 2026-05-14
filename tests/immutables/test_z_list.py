@@ -41,16 +41,24 @@ def test_disallow_mutable_items():
         _ = ZList([0, 1, {"a": 2}])
 
 
-def test_immutable_setattr():
-    zl = ZList([1, 2, 3])
+def test_immutable():
+    t = [1, 2, 3]
+    zl = ZList(t)
+
+    t[0] = 0
+    assert list(zl) == [1, 2, 3]
+
     with pytest.raises(AttributeError):
         zl._data = (4, 5, 6)
 
-
-def test_immutable_delattr():
-    zl = ZList([1, 2, 3])
     with pytest.raises(AttributeError):
         del zl._data
+
+    with pytest.raises(AttributeError):
+        zl._hash = 0
+
+    with pytest.raises(AttributeError):
+        del zl._hash
 
 
 def test_getitem_int():
