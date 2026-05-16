@@ -41,6 +41,11 @@ def test_disallow_mutable_items():
         _ = ZVec([0, 1, {"a": 2}])
 
 
+def test_allow_mutable_items():
+    zvec = ZVec([0, 1, [2, 3]], require_hash=False)
+    assert list(zvec) == [0, 1, [2, 3]]
+
+
 def test_immutable():
     t = [1, 2, 3]
     zvec = ZVec(t)
@@ -61,8 +66,9 @@ def test_immutable():
         del zvec._hash
 
 
-def test_hash():
+def test_hash_immutable_items():
     assert hash(ZVec([1, 2, 3])) == hash(ZVec([1, 2, 3]))
+    assert hash(ZVec([1, 2, 3])) == hash(ZVec([1, 2, 3], require_hash=False))
 
     zvec = ZVec([1, 2, 3])
     assert hash(zvec) == hash(zvec)
@@ -79,6 +85,12 @@ def test_hash():
     assert hash(outer) is not None
 
 
+def test_hash_mutable_items():
+    zvec = ZVec([1, 2, [3, 4]], require_hash=False)
+    with pytest.raises(TypeError):
+        _ = hash(zvec)
+
+
 def test_eq():
     assert ZVec([1, 2, 3]) == ZVec([1, 2, 3])
     assert ZVec([1, 2, 3]) != ZVec([1, 2, 4])
@@ -87,10 +99,14 @@ def test_eq():
     assert ZVec([1, 2, 3]) != [1, 2, 3]
     assert ZVec([1, 2, 3]) != (1, 2, 3)
 
+def test_eq_mutable_items():
+    assert ZVec([1, [2, 3]], require_hash=False) == ZVec([1, [2, 3]], require_hash=False)
+
 
 def test_len():
     assert len(ZVec([0, 1, 2])) == 3
     assert len(ZVec([])) == 0
+    assert len(ZVec([1, [2, 3]], require_hash=False)) == 2
 
 
 def test_iter():
@@ -98,16 +114,27 @@ def test_iter():
     items = [item for item in zvec]
     assert items == [1, 2, 3]
 
+    zvec = ZVec([1, [2, 3]], require_hash=False)
+    items = [item for item in zvec]
+    assert items == [1, [2, 3]]
+
 
 def test_contains():
     zvec = ZVec([1, 2, 3])
     assert 2 in zvec
     assert 4 not in zvec
 
+    zvec = ZVec([1, [2, 3]], require_hash=False)
+    assert 1 in zvec
+    assert [2, 3] in zvec
+
 
 def test_reversed():
     zvec = ZVec([1, 2, 3])
     assert list(reversed(zvec)) == [3, 2, 1]
+
+    zvec = ZVec([1, [2, 3]], require_hash=False)
+    assert list(reversed(zvec)) == [[2, 3], 1]
 
 
 def test_add():
@@ -136,3 +163,11 @@ def test_getitem_slice():
 def test_repr():
     zvec = ZVec([1, 2, 3])
     assert isinstance(repr(zvec), str)
+
+
+def test_is_hashable():
+    zvec = ZVec([1, 2, 3])
+    assert zvec.is_hashable()
+
+    zvec = ZVec([1, [2, 3]], require_hash=False)
+    assert not zvec.is_hashable()
