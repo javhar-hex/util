@@ -6,7 +6,11 @@ T = TypeVar("T")
 
 class ZSet(Generic[T]):
     """
-    Lightweight deeply immutable set.
+    Lightweight immutable set.
+
+    All elements of the set are required to be hashable. Consequently, the set is
+    deeply immutable and is itself hashable. The hash value is precomputed and cached at
+    construction time.
     """
     __slots__ = ("_data", "_hash")
 
