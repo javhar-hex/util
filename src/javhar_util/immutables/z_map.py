@@ -1,5 +1,14 @@
 from types import MappingProxyType
-from typing import Generic, ItemsView, Iterator, KeysView, Mapping, TypeVar, ValuesView
+from typing import (
+    Generic,
+    ItemsView,
+    Iterable,
+    Iterator,
+    KeysView,
+    Mapping,
+    TypeVar,
+    ValuesView,
+)
 
 K = TypeVar("K")
 V = TypeVar("V")
@@ -7,20 +16,27 @@ V = TypeVar("V")
 
 class ZMap(Generic[K, V]):
     """
-    Lightweight deeply immutable map.
+    Lightweight immutable map.
+
+    By default, the map is deeply immutable, which requires each of the values to be
+    deeply immutable itself. The map is hashable and stores its precomputed hash.
+    Alternatively the map can be instantiated with `require_hash=False`, which allows
+    mutable values. If mutable values are present, `is_mutable` will return `False`
+    and `hash()` will raise a TypeError.
+
+    As with any mapping, the keys must always be hashable and therefore immutable.
     """
+
     __slots__ = ("_data", "_hash")
 
-    def __init__(self, mapping: Mapping[K, V]) -> None:
-        data = dict(mapping)
-        try:
-            computed_hash = hash(frozenset(data.items()))
-        except TypeError as e:
-            raise TypeError(
-                f"ZMap requires all keys and values to be hashable: {e}"
-            ) from e
-        object.__setattr__(self, "_data", MappingProxyType(data))
-        object.__setattr__(self, "_hash", computed_hash)
+    def __init__(
+        self, data: Mapping[K, V] | Iterable[tuple[K, V]], require_hash: bool = True
+    ) -> None:
+        data_dict = _parse_data(data)
+        h = _parse_hash(data_dict, require_hash)
+
+        object.__setattr__(self, "_data", MappingProxyType(data_dict))
+        object.__setattr__(self, "_hash", h)
 
     def __setattr__(self, name: str, value: object) -> None:
         raise AttributeError("ZMap is immutable")
@@ -29,6 +45,8 @@ class ZMap(Generic[K, V]):
         raise AttributeError("ZMap is immutable")
 
     def __hash__(self) -> int:
+        if self._hash is None:
+            raise TypeError("Not all values are hashable.")
         return self._hash
 
     def __eq__(self, other: object) -> bool:
@@ -62,3 +80,24 @@ class ZMap(Generic[K, V]):
 
     def __repr__(self) -> str:
         return f"ZMap({self._data})"
+
+    def is_hashable(self) -> bool:
+        return self._hash is not None
+
+
+def _parse_data(data: Mapping[K, V] | Iterable[tuple[K, V]]) -> dict[K, V]:
+    try:
+        return dict(data)
+    except TypeError as e:
+        raise TypeError("ZMap requires all keys to be hashable: {e}")
+
+
+def _parse_hash(data: dict[K, V], require_hash: bool) -> int | None:
+    try:
+        return hash(frozenset(data.items()))
+    except TypeError as e:
+        if not require_hash:
+            return None
+        raise TypeError(
+            f"ZMap requires all keys and values to be hashable: {e}"
+        ) from e

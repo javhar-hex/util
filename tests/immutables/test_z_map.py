@@ -10,10 +10,24 @@ def test_init():
     assert zmap["b"] == "xyz"
     assert zmap["c"] == False
 
+    zmap = ZMap([('a', 1), ('b', 2)])
+    assert zmap['a'] == 1
+    assert zmap['b'] == 2
 
-def test_disallow_mutable_items():
+
+def test_disallow_mutable_keys():
+    with pytest.raises(TypeError):
+        _ = ZMap([([1, 2], 1), ('b', 2)])
+
+
+def test_disallow_mutable_values():
     with pytest.raises(TypeError):
         _ = ZMap({"a": 1, "b": [1, 2]})
+
+
+def test_allow_mutable_values():
+    zmap = ZMap({"a": 1, "b": [1, 2]}, require_hash=False)
+    assert zmap["b"] == [1, 2]
 
 
 def test_immutable():
@@ -37,7 +51,7 @@ def test_immutable():
         del zmap._hash
 
 
-def test_hash():
+def test_hash_immutable_values():
     zmap = ZMap({"a": 1, "b": 2})
     assert hash(zmap) == hash(zmap)
 
@@ -53,6 +67,11 @@ def test_hash():
     outer = ZMap({zmap: zmap2})
     assert hash(outer) is not None
 
+def test_hash_mutable_values():
+    zmap = ZMap({'a': 1, 'b': [2, 3]}, require_hash=False)
+    with pytest.raises(TypeError):
+        _ = hash(zmap)
+
 
 def test_eq():
     assert ZMap({"a": 1, "b": 2}) == ZMap({"b": 2, "a": 1})
@@ -60,10 +79,15 @@ def test_eq():
     assert ZMap({"a": 1, "b": 2}) != ZMap({"a": 1})
     assert ZMap({"a": 1, "b": 2}) != {"a": 1, "b": 2}
 
+def test_eq_mutable_values():
+    assert ZMap({'a': 1, 'b': [2, 3]}, require_hash=False) == ZMap({'b': [2, 3], 'a': 1}, require_hash=False)
+
+
 
 def test_len():
     assert len(ZMap({"a": 1, "b": 2})) == 2
     assert len(ZMap({})) == 0
+    assert len(ZMap({'a': 1, 'b': [2, 3]}, require_hash=False)) == 2
 
 
 def test_iter():
@@ -86,6 +110,9 @@ def test_getitem():
     with pytest.raises(KeyError):
         _ = zmap["c"]
 
+    zmap = ZMap({'a': 1, 'b': [2, 3]}, require_hash=False)
+    assert zmap['b'] == [2, 3]
+
 
 def test_get():
     zmap = ZMap({"a": 1, "b": 2})
@@ -104,6 +131,10 @@ def test_values():
     zmap = ZMap({"a": 1, "b": 2})
     assert set(zmap.values()) == {1, 2}
 
+    zmap = ZMap({'a': 1, 'b': [2, 3]}, require_hash=False)
+    assert len(zmap.values()) == 2
+    assert [2, 3] in zmap.values()
+
 
 def test_items():
     zmap = ZMap({"a": 1, "b": 2})
@@ -113,3 +144,11 @@ def test_items():
 def test_repr():
     zmap = ZMap({"a": 1, "b": 2})
     assert isinstance(repr(zmap), str)
+
+
+def test_is_hashable():
+    zmap = ZMap({"a": 1, "b": 2})
+    assert zmap.is_hashable()
+
+    zmap = ZMap({'a': 1, 'b': [2, 3]}, require_hash=False)
+    assert not zmap.is_hashable()
