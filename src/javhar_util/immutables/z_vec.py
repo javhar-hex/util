@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Generic, TypeVar, Iterator, Iterable, overload
+from typing import Generic, Sequence, SupportsIndex, TypeVar, Iterator, Iterable, overload
 
 T = TypeVar("T")
 
 
-class ZVec(Generic[T]):
+class ZVec(Generic[T], Sequence[T]):
     """
     Lightweight immutable vector.
 
@@ -24,10 +24,10 @@ class ZVec(Generic[T]):
         object.__setattr__(self, "_hash", h)
 
     def __setattr__(self, name: str, value: object) -> None:
-        raise AttributeError(f"ZList is immutable")
+        raise AttributeError("ZList is immutable")
 
     def __delattr__(self, name: str) -> None:
-        raise AttributeError(f"ZList is immutable")
+        raise AttributeError("ZList is immutable")
 
     def __hash__(self) -> int:
         if self._hash is None:
@@ -55,10 +55,10 @@ class ZVec(Generic[T]):
         return ZVec(self._data + other._data)
 
     @overload
-    def __getitem__(self, index: int) -> T: ...
+    def __getitem__(self, index: SupportsIndex) -> T: ...
     @overload
     def __getitem__(self, index: slice) -> ZVec[T]: ...
-    def __getitem__(self, index: int | slice) -> T | ZVec[T]:
+    def __getitem__(self, index: SupportsIndex | slice) -> T | ZVec[T]:
         if isinstance(index, slice):
             return ZVec(self._data[index])
         return self._data[index]
