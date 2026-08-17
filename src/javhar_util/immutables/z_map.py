@@ -84,7 +84,7 @@ def _parse_data(data: Mapping[K, V] | Iterable[tuple[K, V]]) -> dict[K, V]:
     try:
         return dict(data)
     except TypeError as e:
-        raise TypeError("ZMap requires all keys to be hashable: {e}")
+        raise TypeError(f"ZMap requires all keys to be hashable: {e}")
 
 
 def _parse_hash(data: dict[K, V], require_hash: bool) -> int | None:
