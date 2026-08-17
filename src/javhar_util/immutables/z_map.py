@@ -1,14 +1,9 @@
 from types import MappingProxyType
 from typing import (
     Generic,
-    ItemsView,
-    Iterable,
-    Iterator,
-    KeysView,
-    Mapping,
     TypeVar,
-    ValuesView,
 )
+from collections.abc import ItemsView, Iterable, Iterator, KeysView, Mapping, ValuesView
 
 K = TypeVar("K")
 V = TypeVar("V")
