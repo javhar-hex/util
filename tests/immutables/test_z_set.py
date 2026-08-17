@@ -4,7 +4,7 @@ from util.dtypes.immutables.z_set import ZSet
 
 
 def test_init():
-    zset = ZSet({"a", 1, False, (3, 4), "a"})
+    zset = ZSet(["a", "a", 1, False, (3, 4)])
     assert len(zset) == 4
     assert set(zset) == {False, (3, 4), 1, "a"}
 
@@ -59,7 +59,7 @@ def test_len():
 
 def test_iter():
     zset = ZSet({"a", "b", "c"})
-    items = set(item for item in zset)
+    items = set(zset)
     assert items == {"b", "c", "a"}
 
 

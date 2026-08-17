@@ -92,7 +92,7 @@ def test_len():
 
 def test_iter():
     zmap = ZMap({"a": 1, "b": 2, "c": 3})
-    keys = set(key for key in zmap)
+    keys = set(zmap)
     assert keys == {"a", "b", "c"}
 
 

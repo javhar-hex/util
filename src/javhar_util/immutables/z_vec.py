@@ -6,7 +6,7 @@ from typing import Generic, SupportsIndex, TypeVar, overload
 T = TypeVar("T")
 
 
-class ZVec(Generic[T], Sequence[T]):
+class ZVec(Sequence[T], Generic[T]):
     """
     Lightweight immutable vector.
 
@@ -52,7 +52,7 @@ class ZVec(Generic[T], Sequence[T]):
     def __reversed__(self) -> Iterator[T]:
         return reversed(self._data)
 
-    def __add__(self, other: "ZVec[T]") -> "ZVec[T]":
+    def __add__(self, other: ZVec[T]) -> ZVec[T]:
         return ZVec(self._data + other._data)
 
     @overload
