@@ -148,7 +148,7 @@ def test_repr():
 
 def test_is_hashable():
     zmap = ZMap({"a": 1, "b": 2})
-    assert zmap.is_hashable()
+    assert zmap.is_hashable
 
     zmap = ZMap({'a': 1, 'b': [2, 3]}, require_hash=False)
-    assert not zmap.is_hashable()
+    assert not zmap.is_hashable

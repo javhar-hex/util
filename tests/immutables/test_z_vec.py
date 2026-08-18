@@ -167,7 +167,7 @@ def test_repr():
 
 def test_is_hashable():
     zvec = ZVec([1, 2, 3])
-    assert zvec.is_hashable()
+    assert zvec.is_hashable
 
     zvec = ZVec([1, [2, 3]], require_hash=False)
-    assert not zvec.is_hashable()
+    assert not zvec.is_hashable

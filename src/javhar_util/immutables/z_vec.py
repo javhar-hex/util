@@ -67,6 +67,7 @@ class ZVec(Sequence[T], Generic[T]):
     def __repr__(self) -> str:
         return f"ZList({list(self._data)})"
     
+    @property
     def is_hashable(self) -> bool:
         return self._hash is not None
 

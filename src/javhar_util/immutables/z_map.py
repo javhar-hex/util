@@ -76,6 +76,7 @@ class ZMap(Generic[K, V]):
     def __repr__(self) -> str:
         return f"ZMap({self._data})"
 
+    @property
     def is_hashable(self) -> bool:
         return self._hash is not None
 
