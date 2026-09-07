@@ -21,7 +21,7 @@ Motivations:
     can contain a list, and that list can be mutated. Calling hash() on such a tuple will
     raise a TypeError.
 - Python's frozenset exists, and ZSet is just a lightweight wrapper around it that adds
-  the precomputed hash. 
+  the precomputed hash.
 - No equivalent for ZMap exists in Python.
 - At construction time, deep immutability is ensured by attempting to compute a hash
   value. Since the hash value is then available anway, it is cached for future use.

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import dataclasses as dc
 from collections.abc import Iterable, Iterator
 from typing import Generic, TypeVar
 
 T = TypeVar("T")
 
 
+@dc.dataclass(frozen=True, slots=True)
 class ZSet(Generic[T]):
     """
     Lightweight immutable set.
@@ -14,7 +16,9 @@ class ZSet(Generic[T]):
     deeply immutable and is itself hashable. The hash value is precomputed and cached at
     construction time.
     """
-    __slots__ = ("_data", "_hash")
+
+    _data: frozenset[T]
+    _hash: int
 
     def __init__(self, iterable: Iterable[T]) -> None:
         try:
@@ -23,12 +27,6 @@ class ZSet(Generic[T]):
             raise TypeError(f"ZSet requires all elements to be hashable: {e}") from e
         object.__setattr__(self, "_data", data)
         object.__setattr__(self, "_hash", hash(data))
-
-    def __setattr__(self, name: str, value: object) -> None:
-        raise AttributeError("ZSet is immutable")
-
-    def __delattr__(self, name: str) -> None:
-        raise AttributeError("ZSet is immutable")
 
     def __hash__(self) -> int:
         return self._hash

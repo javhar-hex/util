@@ -99,8 +99,11 @@ def test_eq():
     assert ZVec([1, 2, 3]) != [1, 2, 3]
     assert ZVec([1, 2, 3]) != (1, 2, 3)
 
+
 def test_eq_mutable_items():
-    assert ZVec([1, [2, 3]], require_hash=False) == ZVec([1, [2, 3]], require_hash=False)
+    assert ZVec([1, [2, 3]], require_hash=False) == ZVec(
+        [1, [2, 3]], require_hash=False
+    )
 
 
 def test_len():
