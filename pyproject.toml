@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "javhar-util"
+version = "0.1.0"
+description = "Small, general-purpose Python utilities, starting with immutable collections."
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "Jack Javhar" }]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "mypy>=1.10", "ruff>=0.5"]
+
+[project.urls]
+Repository = "https://github.com/javhar-hex/util"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+javhar_util = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --maxfail=1"
+
+[tool.ruff]
+line-length = 89
+# Markdown holds prose and illustrative snippets, not code to reformat.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.mypy]
+strict = true
+mypy_path = ["src"]
+explicit_package_bases = true
