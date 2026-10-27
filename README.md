@@ -29,7 +29,7 @@ considered.
 pip install "javhar-util @ git+https://github.com/javhar-hex/util"
 ```
 
-Requires Python 3.10 or later.
+Requires Python 3.11 or later.
 
 ## Development
 

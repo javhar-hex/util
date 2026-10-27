@@ -9,7 +9,7 @@ description = "Small, general-purpose Python utilities, starting with immutable 
 readme = "README.md"
 license = "Apache-2.0"
 authors = [{ name = "Jack Javhar" }]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
