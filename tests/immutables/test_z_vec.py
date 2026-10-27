@@ -1,6 +1,6 @@
 import pytest
 
-from util.dtypes.immutables.z_vec import ZVec
+from javhar_util.immutables import ZVec
 
 
 def test_init():

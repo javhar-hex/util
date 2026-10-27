@@ -1,6 +1,6 @@
 import pytest
 
-from util.dtypes.immutables.z_set import ZSet
+from javhar_util.immutables import ZSet
 
 
 def test_init():

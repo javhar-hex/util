@@ -36,3 +36,9 @@ Alternatives:
   geared towards persistance rather than immutability, and as such it contains much
   additional functionality. Its pvector is less effcient with hashing.
 """
+
+from javhar_util.immutables.z_map import ZMap
+from javhar_util.immutables.z_set import ZSet
+from javhar_util.immutables.z_vec import ZVec
+
+__all__ = ["ZMap", "ZSet", "ZVec"]

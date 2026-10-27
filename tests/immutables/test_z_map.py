@@ -1,6 +1,6 @@
 import pytest
 
-from util.dtypes.immutables.z_map import ZMap
+from javhar_util.immutables import ZMap
 
 
 def test_init():
