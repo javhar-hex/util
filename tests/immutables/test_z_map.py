@@ -3,7 +3,7 @@ import pytest
 from javhar_util.immutables import ZMap
 
 
-def test_init():
+def test_init() -> None:
     zmap = ZMap({"a": 1, "b": "xyz", "c": False})
     assert len(zmap) == 3
     assert zmap["a"] == 1
@@ -15,22 +15,22 @@ def test_init():
     assert zmap["b"] == 2
 
 
-def test_disallow_mutable_keys():
+def test_disallow_mutable_keys() -> None:
     with pytest.raises(TypeError):
         _ = ZMap([([1, 2], 1), ("b", 2)])
 
 
-def test_disallow_mutable_values():
+def test_disallow_mutable_values() -> None:
     with pytest.raises(TypeError):
         _ = ZMap({"a": 1, "b": [1, 2]})
 
 
-def test_allow_mutable_values():
+def test_allow_mutable_values() -> None:
     zmap = ZMap({"a": 1, "b": [1, 2]}, require_hash=False)
     assert zmap["b"] == [1, 2]
 
 
-def test_immutable():
+def test_immutable() -> None:
     d = {"a": 1, "b": 2}
     zmap = ZMap(d)
     d["a"] = 3
@@ -38,20 +38,18 @@ def test_immutable():
     assert len(zmap) == 2
     assert zmap["a"] == 1
 
-    with pytest.raises(AttributeError):
-        zmap._data = {"x": 9}
+    for field, value in (("_data", {"x": 9}), ("_hash", 0)):
+        with pytest.raises(AttributeError):
+            setattr(zmap, field, value)
 
     with pytest.raises(AttributeError):
         del zmap._data
 
     with pytest.raises(AttributeError):
-        zmap._hash = 0
-
-    with pytest.raises(AttributeError):
         del zmap._hash
 
 
-def test_hash_immutable_values():
+def test_hash_immutable_values() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert hash(zmap) == hash(zmap)
 
@@ -68,56 +66,56 @@ def test_hash_immutable_values():
     assert hash(outer) is not None
 
 
-def test_hash_mutable_values():
+def test_hash_mutable_values() -> None:
     zmap = ZMap({"a": 1, "b": [2, 3]}, require_hash=False)
     with pytest.raises(TypeError):
         _ = hash(zmap)
 
 
-def test_eq():
+def test_eq() -> None:
     assert ZMap({"a": 1, "b": 2}) == ZMap({"b": 2, "a": 1})
     assert ZMap({"a": 1, "b": 2}) != ZMap({"a": 2, "b": 1})
     assert ZMap({"a": 1, "b": 2}) != ZMap({"a": 1})
     assert ZMap({"a": 1, "b": 2}) != {"a": 1, "b": 2}
 
 
-def test_eq_mutable_values():
+def test_eq_mutable_values() -> None:
     assert ZMap({"a": 1, "b": [2, 3]}, require_hash=False) == ZMap(
         {"b": [2, 3], "a": 1}, require_hash=False
     )
 
 
-def test_len():
+def test_len() -> None:
     assert len(ZMap({"a": 1, "b": 2})) == 2
     assert len(ZMap({})) == 0
     assert len(ZMap({"a": 1, "b": [2, 3]}, require_hash=False)) == 2
 
 
-def test_iter():
+def test_iter() -> None:
     zmap = ZMap({"a": 1, "b": 2, "c": 3})
     keys = set(zmap)
     assert keys == {"a", "b", "c"}
 
 
-def test_contains():
+def test_contains() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert "a" in zmap
     assert "b" in zmap
     assert "c" not in zmap
 
 
-def test_getitem():
+def test_getitem() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert zmap["a"] == 1
     assert zmap["b"] == 2
     with pytest.raises(KeyError):
         _ = zmap["c"]
 
-    zmap = ZMap({"a": 1, "b": [2, 3]}, require_hash=False)
-    assert zmap["b"] == [2, 3]
+    nested = ZMap[str, object]({"a": 1, "b": [2, 3]}, require_hash=False)
+    assert nested["b"] == [2, 3]
 
 
-def test_get():
+def test_get() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert zmap.get("a") == 1
     assert zmap.get("a", 99) == 1
@@ -125,33 +123,33 @@ def test_get():
     assert zmap.get("c", 99) == 99
 
 
-def test_keys():
+def test_keys() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert set(zmap.keys()) == {"a", "b"}
 
 
-def test_values():
+def test_values() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert set(zmap.values()) == {1, 2}
 
-    zmap = ZMap({"a": 1, "b": [2, 3]}, require_hash=False)
-    assert len(zmap.values()) == 2
-    assert [2, 3] in zmap.values()
+    nested = ZMap[str, object]({"a": 1, "b": [2, 3]}, require_hash=False)
+    assert len(nested.values()) == 2
+    assert [2, 3] in nested.values()
 
 
-def test_items():
+def test_items() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert set(zmap.items()) == {("a", 1), ("b", 2)}
 
 
-def test_repr():
+def test_repr() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert isinstance(repr(zmap), str)
 
 
-def test_is_hashable():
+def test_is_hashable() -> None:
     zmap = ZMap({"a": 1, "b": 2})
     assert zmap.is_hashable
 
-    zmap = ZMap({"a": 1, "b": [2, 3]}, require_hash=False)
-    assert not zmap.is_hashable
+    nested = ZMap[str, object]({"a": 1, "b": [2, 3]}, require_hash=False)
+    assert not nested.is_hashable
